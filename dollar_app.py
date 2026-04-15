@@ -77,13 +77,13 @@ if not df_hist.empty:
     st.dataframe(df_hist) # Exibe a tabela
 
 # Cria o gráfico APENAS UMA VEZ com todas as configurações
-fig = px.line(
-        df_hist, 
-        x="Data", 
-        y="Preço", 
-        markers=True, 
-        title="Tendência USD/BRL",
-        labels={"Preço": "Valor em Reais (R$)"})
+    fig = px.line(
+            df_hist, 
+            x="Data", 
+            y="Preço", 
+            markers=True, 
+            title="Tendência USD/BRL",
+            labels={"Preço": "Valor em Reais (R$)"})
     
 # 3. Exibe o gráfico no site 
     st.plotly_chart(fig, use_container_width=True)
