@@ -44,7 +44,7 @@ def buscar_historico():
             })
         
         df = pd.DataFrame(lista_precos)
-        return df.iloc[::-1] # Inverter para a data mais antiga vir primeiro
+        return df#.iloc[::-1] # Inverter para a data mais antiga vir primeiro
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
         return pd.DataFrame()
