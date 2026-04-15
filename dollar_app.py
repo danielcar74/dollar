@@ -86,7 +86,6 @@ fig = px.line(
         labels={"Preço": "Valor em Reais (R$)"})
     
 # 3. Exibe o gráfico no site 
-    fig.update_traces(line_color='#1f77b4')
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.warning("Não foi possível carregar o gráfico histórico.")
