@@ -57,7 +57,7 @@ if cotacao:
     # Exibir métricas principais
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Dólar Comercial", f"R$ {float(cotacao['bid']):.2f}", f"{cotacao['pctChange']}%")
+        st.metric("Dólar Comercial", f"R$ {float(cotacao['bid']):.2f}", f"{cotacao['pctChange']}, f"{cotacao['create_date']}%")
     with col2:
         st.metric("Máxima do Dia", f"R$ {float(cotacao['high']):.2f}")
     with col3:
