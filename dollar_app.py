@@ -36,7 +36,7 @@ def buscar_historico():
         dados = response.json()
         
         # Transformar em DataFrame para facilitar o gráfico
-        lista_de_precos = []
+        lista_precos = []
         for dia in dados:
             lista_precos.append({
                 "Data": datetime.fromtimestamp(int(dia['timestamp'])).strftime('%d/%m/%Y'),
