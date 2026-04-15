@@ -101,3 +101,25 @@ if not df_hist.empty:
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.warning("Não foi possível carregar o gráfico histórico.")
+    
+# Footnote
+
+st.divider() # Uma linha fina para separar do conteúdo
+st.caption("Desenvolvido por **Daniel Carvalho** | Senior Product Manager & CS Student")
+st.caption("Dados fornecidos em tempo real pela AwesomeAPI.")
+
+# Cria link para instagram ou LinkedIn
+
+st.markdown("---")
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <p>Created by <strong>Daniel Carvalho</strong></p>
+        <p>
+            <a href="https://github.com/danielcar74" target="_blank">GitHub</a> | 
+            <a href="https://www.linkedin.com/in/SEU_LINKIN" target="_blank">LinkedIn</a>
+        </p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
