@@ -70,14 +70,22 @@ if cotacao:
 st.divider()
 st.write("### Variação nos últimos 15 dias")
 
-df_hist = buscar_historico()
+df_hist = buscar_historico() # Aqui a função roda e devolve os dados
 
 if not df_hist.empty:
-    fig = px.line(df_hist, x="Data", y="Preço", 
-                  markers=True, 
-                  title="Tendência USD/BRL",
-                  labels={"Preço": "Valor em Reais (R$)"})
+    st.write("### Histórico de Preços")
+    st.dataframe(df_hist) # Exibe a tabela
+
+# Cria o gráfico APENAS UMA VEZ com todas as configurações
+fig = px.line(
+        df_hist, 
+        x="Data", 
+        y="Preço", 
+        markers=True, 
+        title="Tendência USD/BRL",
+        labels={"Preço": "Valor em Reais (R$)"})
     
+# 3. Exibe o gráfico no site 
     fig.update_traces(line_color='#1f77b4')
     st.plotly_chart(fig, use_container_width=True)
 else:
