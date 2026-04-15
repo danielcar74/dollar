@@ -7,6 +7,18 @@ from datetime import datetime
 # Configuração da página
 st.set_page_config(page_title="Monitor de Câmbio", layout="wide")
 
+# Injeção de CSS para mudar a cor do fundo
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #e6ffed; /* Verde claro suave */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("Monitor de Dólar em Tempo Real")
 st.subheader("Integração via AwesomeAPI")
 
