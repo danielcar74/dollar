@@ -63,7 +63,8 @@ if cotacao:
     with col3:
         st.metric("Mínima do Dia", f"R$ {float(cotacao['low']):.2f}")
     with col4:
-        datetime.fromtimestamp(int(dia['timestamp'])).strftime('%d/%m/%Y')
+        data_hora = datetime.fromtimestamp(int(cotacao['timestamp'])).strftime('%d/%m/%Y %H:%M')
+        st.metric("Horário", data_hora)
 
 # Exibir Gráfico Histórico
 st.divider()
