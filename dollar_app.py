@@ -105,7 +105,7 @@ else:
 # Footnote
 
 st.divider() # Uma linha fina para separar do conteúdo
- st.caption("Develop by **Daniel G. Carvalho** | Senior Product Manager")
+st.caption("Develop by **Daniel G. Carvalho** | Senior Product Manager")
 st.caption("Real time data by AwesomeAPI.")
 
 # Cria link para instagram ou LinkedIn
