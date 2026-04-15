@@ -10,26 +10,33 @@ st.set_page_config(page_title="Monitor de Câmbio", layout="wide")
 st.title("💵 Monitor de Dólar em Tempo Real")
 st.subheader("Integração via AwesomeAPI")
 
+# 0.Recuperar token de segurança
+try:
+    token = st.secrets["AWESOME_TOKEN"]
+except:
+    st.error("Erro: Token AWESOME_TOKEN não configurrado no Secrets!")
+    st.stop()
+
 # 1. Função para buscar o preço atual
 def buscar_cotacao():
-    url = "https://economia.awesomeapi.com.br/last/USD-BRL"
+    url = f"https://economia.awesomeapi.com.br/json/last/USD-BRL?token={token}"
     try:
         response = requests.get(url)
         dados = response.json()
         return dados['USDBRL']
     except Exception as e:
-        st.error(f"Erro ao conectar com a API: {e}")
+        st.error(f"Erro na API: {e}")
         return None
 
 # 2. Função para buscar o histórico dos últimos 15 dias
 def buscar_historico():
-    url = "https://economia.awesomeapi.com.br/json/daily/USD-BRL/15"
+    url = f"https://economia.awesomeapi.com.br/json/daily/USD-BRL/15?token={token}"
     try:
         response = requests.get(url)
-        dados = response.json()
+        dados = respose.json()
         
         # Transformar em DataFrame para facilitar o gráfico
-        lista_precos = []
+        lista_de_precos = []
         for dia in dados:
             lista_precos.append({
                 "Data": datetime.fromtimestamp(int(dia['timestamp'])).strftime('%d/%m/%Y'),
