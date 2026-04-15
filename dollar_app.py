@@ -33,7 +33,7 @@ def buscar_historico():
     url = f"https://economia.awesomeapi.com.br/json/daily/USD-BRL/15?token={token}"
     try:
         response = requests.get(url)
-        dados = respose.json()
+        dados = response.json()
         
         # Transformar em DataFrame para facilitar o gráfico
         lista_de_precos = []
