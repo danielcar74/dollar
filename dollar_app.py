@@ -19,7 +19,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Monitor de Dólar em Tempo Real")
+st.title("Monitor de Dólar")
 st.subheader("Integração via AwesomeAPI")
 
 # 0.Recuperar token de segurança
@@ -105,8 +105,8 @@ else:
 # Footnote
 
 st.divider() # Uma linha fina para separar do conteúdo
-st.caption("Desenvolvido por **Daniel Carvalho** | Senior Product Manager & CS Student")
-st.caption("Dados fornecidos em tempo real pela AwesomeAPI.")
+ st.caption("Develop by **Daniel G. Carvalho** | Senior Product Manager")
+st.caption("Real time data by AwesomeAPI.")
 
 # Cria link para instagram ou LinkedIn
 
@@ -114,10 +114,10 @@ st.markdown("---")
 st.markdown(
     """
     <div style="text-align: center;">
-        <p>Created by <strong>Daniel Carvalho</strong></p>
+        <p>Created by <strong>Daniel G. Carvalho</strong></p>
         <p>
             <a href="https://github.com/danielcar74" target="_blank">GitHub</a> | 
-            <a href="https://www.linkedin.com/in/SEU_LINKIN" target="_blank">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/danielcar" target="_blank">LinkedIn</a>
         </p>
     </div>
     """, 
