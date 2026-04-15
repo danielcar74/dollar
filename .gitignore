@@ -1,0 +1,12 @@
+# Ignorar chaves de segurança
+.streamlit/secrets.toml
+.env
+
+# Ignorar pastas virtuais do Python
+venv/
+.env
+__pycache__/
+
+# Ignorar arquivos temporários do sistema
+.DS_Store
+Thumbs.db
