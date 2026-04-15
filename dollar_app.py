@@ -44,7 +44,7 @@ def buscar_historico():
             })
         
         df = pd.DataFrame(lista_precos)
-        return df#.iloc[::-1] # Inverter para a data mais antiga vir primeiro
+        return df.iloc[::-1] # Inverter para a data mais antiga vir primeiro
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
         return pd.DataFrame()
@@ -73,8 +73,8 @@ st.write("### Variação nos últimos 15 dias")
 df_hist = buscar_historico() # Aqui a função roda e devolve os dados
 
 if not df_hist.empty:
-    st.write("### Histórico de Preços")
-    st.dataframe(df_hist) # Exibe a tabela
+    # st.write("### Histórico de Preços")
+    # st.dataframe(df_hist) # Exibe a tabela
 
 # Cria o gráfico APENAS UMA VEZ com todas as configurações
     fig = px.line(
