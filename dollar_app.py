@@ -7,7 +7,7 @@ from datetime import datetime
 # Configuração da página
 st.set_page_config(page_title="Monitor de Câmbio", layout="wide")
 
-st.title("💵 Monitor de Dólar em Tempo Real")
+st.title("Monitor de Dólar em Tempo Real")
 st.subheader("Integração via AwesomeAPI")
 
 # 0.Recuperar token de segurança
