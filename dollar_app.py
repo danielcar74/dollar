@@ -65,7 +65,7 @@ def buscar_historico():
 
 def buscar_noticias(termo="geopolitica"):
     api_key = st.secrets["NEWS_API_KEY"]
-    url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}
+    url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}"
     try:
         responde = requests.get(url)
         dados = response.json()
