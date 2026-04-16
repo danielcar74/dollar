@@ -26,7 +26,7 @@ st.subheader("Integração via AwesomeAPI")
 try:
     token = st.secrets["AWESOME_TOKEN"]
 except:
-    st.error("Erro: Token AWESOME_TOKEN não configurrado no Secrets!")
+    st.error("Erro: Token AWESOME_TOKEN não configurado no Secrets!")
     st.stop()
 
 # 1. Função para buscar o preço atual
@@ -60,6 +60,20 @@ def buscar_historico():
     except Exception as e:
         st.error(f"Erro ao carregar histórico: {e}")
         return pd.DataFrame()
+        
+# 3. Função para buscar dados de notícias via APINEWS
+
+def buscar_noticias(termo="geopolitica"):
+    api_key = st.secrets["NEWS_API_KEY"]
+    url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}
+    try:
+        responde = requests.get(url)
+        dados = response.json()
+        return dados.get("articles", [])
+    except Exception as e:
+        st.error(f"Erro ao buscar notícias: {e}")
+        return []
+        
 
 # --- INTERFACE ---
 
@@ -123,3 +137,21 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
+
+# --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
+st.divider()
+st.subheader("📰 Contexto Geopolítico e Notícias")
+
+# Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
+tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
+
+noticias = buscar_noticias(tema)
+
+if noticias:
+    for art in noticias:
+        with st.expander(f"{art['title']}"):
+            st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
+            st.write(art['description'])
+            st.link_button("Ler notícia completa", art['url'])
+else:
+    st.info("Nenhuma notícia encontrada para este tema no momento.")
