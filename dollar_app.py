@@ -22,9 +22,13 @@ st.markdown(
 )
 
 st.title("Monitor de Dólar")
-st.subheader("Integração via AwesomeAPI")
+        #st.caption("Integração via AwesomeAPI")
+st.markdown(
+    '<p style="font-size: 16px; color: #555; margin-top: -20px;">Integração via AwesomeAPI</p>', 
+    unsafe_allow_html=True
+)
 
-# 0.Recuperar token de segurança
+# Recuperar token de segurança
 try:
     token = st.secrets["AWESOME_TOKEN"]
 except:
@@ -68,15 +72,15 @@ def buscar_historico():
 def buscar_noticias(termo):
     api_key = st.secrets["NEWS_API_KEY"]
     
-# Calcular as datas dinamicamente
+    # Calcular as datas dinamicamente
     hoje = datetime.now()
     sete_dias_atras = hoje - timedelta(days=7)
     
-# Formatar para string (ISO 8601: YYYY-MM-DD)
+    # Formatar para string (ISO 8601: YYYY-MM-DD)
     data_fim = hoje.strftime('%Y-%m-%d')
     data_inicio = sete_dias_atras.strftime('%Y-%m-%d')    
     
-# Montar a URL com as datas dinâmicas
+    # Montar a URL com as datas dinâmicas
     url = (
         f"https://newsapi.org/v2/everything?q={termo}"
         f"&from={data_inicio}"
@@ -115,6 +119,8 @@ if cotacao:
     with col4:
         data_hora = datetime.fromtimestamp(int(cotacao['timestamp'])).strftime('%d/%m/%Y %H:%M')
         st.metric("Horário", data_hora)
+
+st.divider() # Uma linha fina para separar do conteúdo
 
 ########
 
@@ -211,10 +217,16 @@ def analisar_noticias_com_ia(noticias, tema, valor_dolar):
     
     return completion.choices[0].message.content
 
-# --- NA INTERFACE ---
-st.header("IA Analyst (Powered by Groq)")
+# --- GROQ NA INTERFACE ---
 
-tema_livre = st.text_input("O que você quer que a IA analise hoje?", "Conflitos no Oriente Médio")
+st.header("AI Analyst - Preço do Dólar e o Contexto Geopolítico")
+st.caption("Powered by Groq")
+
+    # 1. Cria o rótulo estilizado
+st.markdown('<p style="font-size: 20px; color: #1d5c3d; font-weight: bold; margin-bottom: -10px;">O que você quer analisar hoje?</p>', unsafe_allow_html=True)
+
+    # 2. Cria o input sem rótulo interno (label="")
+tema_livre = st.text_input(label="", value="Conflitos no Oriente Médio")
 
 if st.button("Analisar Impacto"):
     with st.spinner("IA minerando notícias e gerando insights..."):
