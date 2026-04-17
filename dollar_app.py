@@ -31,7 +31,7 @@ except:
     st.error("Erro: Token AWESOME_TOKEN não configurado no Secrets!")
     st.stop()
 
-# 1. Função para buscar o preço atual
+# Função para buscar o preço atual do Dólar
 def buscar_cotacao():
     url = f"https://economia.awesomeapi.com.br/json/last/USD-BRL?token={token}"
     try:
@@ -42,7 +42,7 @@ def buscar_cotacao():
         st.error(f"Erro na API: {e}")
         return None
 
-# 2. Função para buscar o histórico dos últimos 15 dias
+# Função para buscar o histórico da cotação do Dólar dos últimos 15 dias
 def buscar_historico():
     url = f"https://economia.awesomeapi.com.br/json/daily/USD-BRL/15?token={token}"
     try:
@@ -63,7 +63,7 @@ def buscar_historico():
         st.error(f"Erro ao carregar histórico: {e}")
         return pd.DataFrame()
         
-# 3. Função para buscar dados de notícias via APINEWS
+# Função para buscar dados de notícias via APINEWS
 
 def buscar_noticias(termo):
     api_key = st.secrets["NEWS_API_KEY"]
@@ -116,30 +116,14 @@ if cotacao:
         data_hora = datetime.fromtimestamp(int(cotacao['timestamp'])).strftime('%d/%m/%Y %H:%M')
         st.metric("Horário", data_hora)
 
-# Exibir Gráfico Histórico
-st.divider()
-st.write("### Variação nos últimos 15 dias")
+########
 
-df_hist = buscar_historico() # Aqui a função roda e devolve os dados
+##colocar GROQ
 
-if not df_hist.empty:
-    # st.write("### Histórico de Preços")
-    # st.dataframe(df_hist) # Exibe a tabela
 
-# Cria o gráfico APENAS UMA VEZ com todas as configurações
-    fig = px.line(
-            df_hist, 
-            x="Data", 
-            y="Preço", 
-            markers=True, 
-            title="Tendência USD/BRL",
-            labels={"Preço": "Valor em Reais (R$)"})
-    
-# 3. Exibe o gráfico no site 
-    st.plotly_chart(fig, use_container_width=True)
-else:
-    st.warning("Não foi possível carregar o gráfico histórico.")
-    
+########
+
+
 
 
 # --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
@@ -165,33 +149,35 @@ else:
 #----------- INÍCIO DO CODE NOVO ---------------
 ################################################   
   
-st.divider()
-st.header("Geopolítica & Contexto by IA")
+# st.divider()
+# st.header("Geopolítica & Contexto by IA")
 
-# Filtros rápidos baseados nas suas ideias originais
-col_filtro, col_vazia = st.columns([1, 2])
-with col_filtro:
-    tema_analise = st.selectbox(
-        "Selecione o evento para correlacionar:",
-        ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
-    )
+# # Filtros rápidos baseados nas suas ideias originais
+# col_filtro, col_vazia = st.columns([1, 2])
+# with col_filtro:
+    # tema_analise = st.selectbox(
+        # "Selecione o evento para correlacionar:",
+        # ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
+    # )
 
-noticias = buscar_noticias(tema_analise)
+# noticias = buscar_noticias(tema_analise)
 
-# Exibição das Notícias em Cards
-if noticias:
-    for art in noticias:
-        # Formatando a data da notícia
-        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+# # Exibição das Notícias em Cards
+# if noticias:
+    # for art in noticias:
+        # # Formatando a data da notícia
+        # data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
         
-        with st.container(border=True):
-            st.write(f"**{art['title']}**")
-            st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
-            st.write(art['description'][:200] + "...") # Limitando o texto
-            st.link_button("Ler reportagem", art['url'])
-else:
-    st.info(f"Sem notícias recentes para '{tema_analise}'.")
+        # with st.container(border=True):
+            # st.write(f"**{art['title']}**")
+            # st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+            # st.write(art['description'][:200] + "...") # Limitando o texto
+            # st.link_button("Ler reportagem", art['url'])
+# else:
+    # st.info(f"Sem notícias recentes para '{tema_analise}'.")
     
+
+  
     
 # Inicializa o cliente Groq
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
@@ -243,6 +229,32 @@ if st.button("Analisar Impacto"):
 # --------------- FIM DO CODE NOVO ------------    
 ###############################################    
     
+
+# Exibir Gráfico Histórico
+st.divider()
+st.write("### Variação nos últimos 15 dias")
+
+df_hist = buscar_historico() # Aqui a função roda e devolve os dados
+
+if not df_hist.empty:
+    # st.write("### Histórico de Preços")
+    # st.dataframe(df_hist) # Exibe a tabela
+
+# Cria o gráfico APENAS UMA VEZ com todas as configurações
+    fig = px.line(
+            df_hist, 
+            x="Data", 
+            y="Preço", 
+            markers=True, 
+            title="Tendência USD/BRL",
+            labels={"Preço": "Valor em Reais (R$)"})
+    
+# 3. Exibe o gráfico no site 
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("Não foi possível carregar o gráfico histórico.")
+    
+
     
     
 # Footnote
