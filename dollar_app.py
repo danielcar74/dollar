@@ -200,10 +200,16 @@ if st.button("Gerar Relatório de Impacto"):
         analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
         
         # --- EXIBIÇÃO NO FRONT-END ---
+        st.info(relatorio)
         
         # Exibe o relatório da IA primeiro (Ouro do projeto)
         st.markdown("### Relatório de Inteligência")
         st.info(analise)
+
+        st.warning("""
+                **Atenção:** As análises acima são geradas por IA e podem conter imprecisões (alucinações). 
+                Este dashboard tem fins puramente educacionais e **não constitui recomendação de investimento**.
+            """)        
         
         # Exibe as notícias que serviram de base (Transparência/Fontes)
         st.divider()
