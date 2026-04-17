@@ -119,7 +119,7 @@ if cotacao:
         st.metric("Mínima do Dia", f"R$ {float(cotacao['low']):.2f}")
     with col4:
     # Define o fuso horário de Brasília/São Paulo
-        fuso_sp = pytz.timezone('America/Sao_Paulo')
+#        fuso_sp = pytz.timezone('America/Sao_Paulo')
     
     # Converte o timestamp vindo da API para o fuso correto
         data_hora_sp = datetime.fromtimestamp(int(cotacao['timestamp']), tz=pytz.utc).astimezone(fuso_sp)
