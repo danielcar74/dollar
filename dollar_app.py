@@ -221,16 +221,16 @@ if st.button("Gerar Relatório de Impacto"):
         # 3. Gera a análise da IA
         analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
         # Inserção do Disclaimer aqui
-        st.divider()
-        st.warning("""
-        ### ⚠️ Isenção de Responsabilidade (Disclaimer)
+        # st.divider()
+        # st.warning("""
+        # ### ⚠️ Isenção de Responsabilidade (Disclaimer)
         
-        **Sobre a Inteligência Artificial:** Este sistema utiliza o modelo Llama 3 via Groq. É importante notar que Modelos de Linguagem de Grande Escala (LLMs) podem alucinar. A análise deve ser interpretada como uma síntese e não como verdade absoluta.
+        # **Sobre a Inteligência Artificial:** Este sistema utiliza o modelo Llama 3 via Groq. É importante notar que Modelos de Linguagem de Grande Escala (LLMs) podem alucinar. A análise deve ser interpretada como uma síntese e não como verdade absoluta.
 
-        **Sobre Investimentos:** O objetivo é de estudo acadêmico. 
-        * Não representa sugestão de investimento.
-        * Sem relação com agências, corretoras ou bancos.
-        """)
+        # **Sobre Investimentos:** O objetivo é de estudo acadêmico. 
+        # * Não representa sugestão de investimento.
+        # * Sem relação com agências, corretoras ou bancos.
+        # """)
         
         # --- EXIBIÇÃO NO FRONT-END ---
 
@@ -242,6 +242,7 @@ if st.button("Gerar Relatório de Impacto"):
         st.warning("""
                 **Atenção:** As análises acima são geradas por IA e podem conter imprecisões (alucinações). 
                 Este dashboard tem fins puramente educacionais e **não constitui recomendação de investimento**.
+                **Sobre a Inteligência Artificial:** Este sistema utiliza o modelo Llama 3 via Groq. É importante notar que Modelos de Linguagem de Grande Escala (LLMs) podem alucinar. A análise deve ser interpretada como uma síntese e não como verdade absoluta.
             """)        
         
         # Exibe as notícias que serviram de base (Transparência/Fontes)
