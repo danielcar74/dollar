@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 #from newsapi import NewsApiClient
-from groq import Groq
+#from groq import Groq
 
 
 # Configuração da página
