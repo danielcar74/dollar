@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import pytz
 import plotly.express as px
 from datetime import datetime, timedelta
 from groq import Groq
@@ -117,8 +118,16 @@ if cotacao:
     with col3:
         st.metric("Mínima do Dia", f"R$ {float(cotacao['low']):.2f}")
     with col4:
-        data_hora = datetime.fromtimestamp(int(cotacao['timestamp'])).strftime('%d/%m/%Y %H:%M')
-        st.metric("Horário", data_hora)
+    # Define o fuso horário de Brasília/São Paulo
+        fuso_sp = pytz.timezone('America/Sao_Paulo')
+    
+    # Converte o timestamp vindo da API para o fuso correto
+        data_hora_sp = datetime.fromtimestamp(int(cotacao['timestamp']), tz=pytz.utc).astimezone(fuso_sp)
+        data_hora_formatada = data_hora_sp.strftime('%d/%m/%Y %H:%M')
+    
+    st.metric("Horário (Brasília)", data_hora_formatada)
+
+st.metric("Horário (Brasília)", data_hora_formatada)
 
 #st.divider() # Uma linha fina para separar do conteúdo
 
@@ -172,9 +181,21 @@ if cotacao:
     # ... (restante das suas colunas de métricas)
 
 # --- SEÇÃO DE INTELIGÊNCIA (IA) ---
-st.divider()
-st.header("🤖 Analista Geopolítico IA")
-st.markdown('<p style="font-size: 18px; color: #1d5c3d;">Pesquise um tema para ver a correlação com o Dólar</p>', unsafe_allow_html=True)
+#st.divider()
+
+st.markdown("""
+    <hr style="margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid #ccc;">
+    <h2 style="margin-top: -10px;">Analista Geopolítico IA</h2>
+    <p style="font-size: 16px; color: #555; margin-top: -15px;">Pesquise um tema para ver a correlação com o Dólar</p>
+""", unsafe_allow_html=True)
+
+
+# st.header("Analista Geopolítico IA")
+# st.markdown(
+    # '<p style="font-size: 16px; color: #555; margin-top: -20px;">Ai powered by Groq</p>', 
+    # unsafe_allow_html=True
+# )
+# st.markdown('<p style="font-size: 18px; color: #1d5c3d;">Pesquise um tema para ver a correlação com o Dólar</p>', unsafe_allow_html=True)
 
 tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="Geopolítica")
 
