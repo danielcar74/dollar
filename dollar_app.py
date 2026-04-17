@@ -120,7 +120,7 @@ if cotacao:
         data_hora = datetime.fromtimestamp(int(cotacao['timestamp'])).strftime('%d/%m/%Y %H:%M')
         st.metric("Horário", data_hora)
 
-st.divider() # Uma linha fina para separar do conteúdo
+#st.divider() # Uma linha fina para separar do conteúdo
 
 # ... (mantenha suas funções buscar_cotacao, buscar_historico e buscar_noticias no topo)
 
@@ -178,13 +178,56 @@ st.markdown('<p style="font-size: 18px; color: #1d5c3d;">Pesquise um tema para v
 
 tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="Geopolítica")
 
-if st.button("Gerar Relatório de Impacto"):
-    with st.spinner("IA analisando notícias e tendências de mercado..."):
-        dados_noticias = buscar_noticias(tema_livre)
-        relatorio = analisar_noticias_com_ia(dados_noticias, tema_livre, valor_atual)
+# if st.button("Gerar Relatório de Impacto"):
+    # with st.spinner("IA analisando notícias e tendências de mercado..."):
+        # dados_noticias = buscar_noticias(tema_livre)
+        # relatorio = analisar_noticias_com_ia(dados_noticias, tema_livre, valor_atual)
         
-        st.markdown("### 📊 Relatório da IA")
-        st.info(relatorio)
+        # st.markdown("### 📊 Relatório da IA")
+        # st.info(relatorio)
+        
+        
+##novo
+if st.button("Gerar Relatório de Impacto"):
+    with st.spinner("IA minerando notícias e gerando insights..."):
+        # 1. Busca as notícias brutas
+        raw_noticias = buscar_noticias(tema_livre)
+        
+        # 2. Pega o valor do dólar para o contexto
+        valor_atual = cotacao['bid'] if cotacao else "Não disponível"
+        
+        # 3. Gera a análise da IA
+        analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
+        
+        # --- EXIBIÇÃO NO FRONT-END ---
+        
+        # Exibe o relatório da IA primeiro (Ouro do projeto)
+        st.markdown("### Relatório de Inteligência")
+        st.info(analise)
+        
+        # Exibe as notícias que serviram de base (Transparência/Fontes)
+        st.divider()
+        st.subheader("🔗 Fontes Analisadas")
+        
+        if raw_noticias:
+            # Criamos colunas para as notícias não ficarem gigantes na vertical
+            for art in raw_noticias[:6]: # Limitamos às 6 primeiras para não poluir
+                # Formata a data para o padrão BR
+                data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+                
+                with st.container(border=True):
+                    col_logo, col_txt = st.columns([1, 4])
+                    with col_txt:
+                        st.write(f"**{art['title']}**")
+                        st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+                        # Link direto para a notícia
+                        st.link_button("Ver notícia completa", art['url'])
+        else:
+            st.warning("Nenhuma notícia encontrada para listar como fonte.")        
+        
+        
+        
+        
 
 # --- GRÁFICO HISTÓRICO ---
 st.divider()
