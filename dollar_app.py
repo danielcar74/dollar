@@ -126,7 +126,7 @@ if cotacao:
         data_hora_formatada = data_hora_sp.strftime('%d/%m/%Y %H:%M')
     
         st.metric("Horário (Brasília)", data_hora_formatada)
-        st.metric("Horário (Brasília)", data_hora_formatada)
+
 
 
 
