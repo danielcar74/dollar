@@ -116,27 +116,7 @@ if not df_hist.empty:
 else:
     st.warning("Não foi possível carregar o gráfico histórico.")
     
-# Footnote
 
-st.divider() # Uma linha fina para separar do conteúdo
-st.caption("Develop by **Daniel G. Carvalho** | Senior Product Manager")
-st.caption("Real time data by AwesomeAPI.")
-
-# Cria link para instagram ou LinkedIn
-
-st.markdown("---")
-st.markdown(
-    """
-    <div style="text-align: center;">
-        <p>Created by <strong>Daniel G. Carvalho</strong></p>
-        <p>
-            <a href="https://github.com/danielcar74" target="_blank">GitHub</a> | 
-            <a href="https://www.linkedin.com/in/danielcar" target="_blank">LinkedIn</a>
-        </p>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
 
 # --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
 # st.divider()
@@ -156,7 +136,8 @@ st.markdown(
 # else:
     # st.info("Nenhuma notícia encontrada para este tema no momento.")
     
-    st.divider()
+  
+st.divider()
 st.header("🌍 Inteligência Geopolítica & Contexto")
 
 # Filtros rápidos baseados nas suas ideias originais
@@ -182,3 +163,27 @@ if noticias:
             st.link_button("Ler reportagem", art['url'])
 else:
     st.info(f"Sem notícias recentes para '{tema_analise}'.")
+    
+    
+    
+# Footnote
+
+st.divider() # Uma linha fina para separar do conteúdo
+st.caption("Develop by **Daniel G. Carvalho** | Senior Product Manager")
+st.caption("Real time data by AwesomeAPI.")
+
+# Cria link para instagram ou LinkedIn
+
+st.markdown("---")
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <p>Created by <strong>Daniel G. Carvalho</strong></p>
+        <p>
+            <a href="https://github.com/danielcar74" target="_blank">GitHub</a> | 
+            <a href="https://www.linkedin.com/in/danielcar" target="_blank">LinkedIn</a>
+        </p>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
