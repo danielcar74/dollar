@@ -126,6 +126,7 @@ if cotacao:
         data_hora_formatada = data_hora_sp.strftime('%d/%m/%Y %H:%M')
     
         st.metric("Horário (Brasília)", data_hora_formatada)
+        st.metric("Horário (Brasília)", data_hora_formatada)
 
 
 
@@ -197,7 +198,7 @@ st.markdown("""
 # )
 # st.markdown('<p style="font-size: 18px; color: #1d5c3d;">Pesquise um tema para ver a correlação com o Dólar</p>', unsafe_allow_html=True)
 
-tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="Geopolítica")
+tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="")
 
 # if st.button("Gerar Relatório de Impacto"):
     # with st.spinner("IA analisando notícias e tendências de mercado..."):
