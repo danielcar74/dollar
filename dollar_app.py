@@ -3,6 +3,9 @@ import requests
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
+from newsapi import NewsApiClient
+from groq import Groq
+
 
 # Configuração da página
 st.set_page_config(page_title="Monitor de Câmbio", layout="wide")
@@ -65,7 +68,8 @@ def buscar_historico():
 
 def buscar_noticias(termo):
     api_key = st.secrets["NEWS_API_KEY"]
-    url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}"
+    url = f"https://newsapi.org/V2/everything?q={termo}&from=2026-04-15&to=2026-04-17&sortBy=publishedAt&apiKey={api_key}"
+    # url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}"
     try:
         response = requests.get(url)
         dados = response.json()
@@ -119,50 +123,101 @@ else:
 
 
 # --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
-# st.divider()
-# st.subheader("📰 Contexto Geopolítico e Notícias")
-
-# # Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
-# tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
-
-# noticias = buscar_noticias(tema)
-
-# if noticias:
-    # for art in noticias:
-        # with st.expander(f"{art['title']}"):
-            # st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
-            # st.write(art['description'])
-            # st.link_button("Ler notícia completa", art['url'])
-# else:
-    # st.info("Nenhuma notícia encontrada para este tema no momento.")
-    
-  
 st.divider()
-st.header("🌍 Inteligência Geopolítica & Contexto")
+st.subheader("📰 Contexto Geopolítico e Notícias")
 
-# Filtros rápidos baseados nas suas ideias originais
-col_filtro, col_vazia = st.columns([1, 2])
-with col_filtro:
-    tema_analise = st.selectbox(
-        "Selecione o evento para correlacionar:",
-        ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
-    )
+# Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
+tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
 
-noticias = buscar_noticias(tema_analise)
+noticias = buscar_noticias(tema)
 
-# Exibição das Notícias em Cards
 if noticias:
     for art in noticias:
-        # Formatando a data da notícia
-        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
-        
-        with st.container(border=True):
-            st.write(f"**{art['title']}**")
-            st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
-            st.write(art['description'][:200] + "...") # Limitando o texto
-            st.link_button("Ler reportagem", art['url'])
+        with st.expander(f"{art['title']}"):
+            st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
+            st.write(art['description'])
+            st.link_button("Ler notícia completa", art['url'])
 else:
-    st.info(f"Sem notícias recentes para '{tema_analise}'.")
+    st.info("Nenhuma notícia encontrada para este tema no momento.")
+
+
+#----------- INÍCIO DO CODE NOVO ---------------
+################################################   
+  
+# st.divider()
+# st.header("🌍 Inteligência Geopolítica & Contexto")
+
+# # Filtros rápidos baseados nas suas ideias originais
+# col_filtro, col_vazia = st.columns([1, 2])
+# with col_filtro:
+    # tema_analise = st.selectbox(
+        # "Selecione o evento para correlacionar:",
+        # ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
+    # )
+
+# noticias = buscar_noticias(tema_analise)
+
+# # Exibição das Notícias em Cards
+# if noticias:
+    # for art in noticias:
+        # # Formatando a data da notícia
+        # data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+        
+        # with st.container(border=True):
+            # st.write(f"**{art['title']}**")
+            # st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+            # st.write(art['description'][:200] + "...") # Limitando o texto
+            # st.link_button("Ler reportagem", art['url'])
+# else:
+    # st.info(f"Sem notícias recentes para '{tema_analise}'.")
+    
+    
+# # Inicializa o cliente Groq
+# client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+
+# def analisar_noticias_com_ia(noticias, tema):
+    # if not noticias:
+        # return "Nenhuma notícia encontrada para análise."
+    
+    # # Preparar o texto para o LLM (mandamos apenas títulos/descrições para economizar tokens)
+    # texto_noticias = ""
+    # for i, art in enumerate(noticias):
+        # texto_noticias += f"[{i}] Título: {art['title']}\nDescrição: {art['description']}\n\n"
+    
+    # prompt = f"""
+    # Você é um analista sênior geopolítico. Abaixo estão notícias sobre '{tema}'.
+    # Selecione as 3 mais importantes que podem afetar o dólar ou a estabilidade global.
+    # Para cada uma, escreva um resumo de 2 linhas e explique o porquê da importânciaa.
+    # Use também o valor do dólar do dia que está em Dollar.
+    # O dólar está em R$ {valor}. Com base nessas notícias, você acha que a tendência é de alta ou baixa?
+    # Responda em Português, formatado em Markdown.
+    
+    # Notícias:
+    # {texto_noticias}
+    # Dollar:
+    # {bid}
+    # """
+    
+    # completion = client.chat.completions.create(
+        # model="llama-3.3-70b-versatile", # Modelo rápido e inteligente
+        # messages=[{"role": "user", "content": prompt}]
+    # )
+    
+    # return completion.choices[0].message.content
+
+# # --- NA INTERFACE ---
+# st.header("🤖 IA Analyst (Powered by Groq)")
+
+# tema_livre = st.text_input("O que você quer que a IA analise hoje?", "Conflitos no Oriente Médio")
+
+# if st.button("Analisar Impacto"):
+    # with st.spinner("IA minerando notícias e gerando insights..."):
+        # raw_noticias = buscar_noticias(tema_livre) # Sua função da NewsAPI
+        # analise = analisar_noticias_com_ia(raw_noticias, tema_livre)
+        # st.markdown(analise)
+    
+# --------------- FIM DO CODE NOVO ------------    
+###############################################    
     
     
     
