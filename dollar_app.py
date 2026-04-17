@@ -241,7 +241,7 @@ else:
     st.info("Nenhuma notícia encontrada para este tema no momento.")
 
 
------------ INÍCIO DO CODE NOVO ---------------
+#----------- INÍCIO DO CODE NOVO ---------------
 ###############################################   
   
 st.divider()
