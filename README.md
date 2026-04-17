@@ -1,6 +1,6 @@
 ## Dollar App - AI Analyst
 
-## Produto Digital
+# Produto Digital
 O objetivo do projeto é criar um código em Python que possa apresentar a cotação do dólar no momento da consulta e permitir fazer relações com notícias que possam
 ter impactado a variação do preço da moeda Real em relação ao Dólar.
 Essa se torna uma ferramenta interessante para ter uma análise em tempo real do LLM do Groq sobre o comportamento do dólar hoje e nos últimos 15 dias, diante das notícias 
