@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timedelta
 #from newsapi import NewsApiClient
 #from groq import Groq
 
@@ -68,8 +68,29 @@ def buscar_historico():
 
 def buscar_noticias(termo):
     api_key = st.secrets["NEWS_API_KEY"]
-    url = f"https://newsapi.org/V2/everything?q={termo}&from=2026-04-15&to=2026-04-17&sortBy=publishedAt&apiKey={api_key}"
+    
+# Calcular as datas dinamicamente
+    hoje = datetime.now()
+    sete_dias_atras = hoje - timedelta(days=7)
+    
+    # 2. Formatar para string (ISO 8601: YYYY-MM-DD)
+    data_fim = hoje.strftime('%Y-%m-%d')
+    data_inicio = sete_dias_atras.strftime('%Y-%m-%d')    
+    
+# 3. Montar a URL com as datas dinâmicas
+    url = (
+        f"https://newsapi.org/v2/everything?q={termo}"
+        f"&from={data_inicio}"
+        f"&to={data_fim}"
+        f"&language=pt"
+        f"&sortBy=publishedAt"
+        f"&pageSize=20" # Pegamos mais notícias para o Groq analisar
+        f"&apiKey={api_key}"
+    )
+    
+    #url = f"https://newsapi.org/V2/everything?q={termo}&from=2026-04-15&to=2026-04-17&sortBy=publishedAt&apiKey={api_key}"
     # url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}"
+    
     try:
         response = requests.get(url)
         dados = response.json()
