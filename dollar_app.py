@@ -132,55 +132,7 @@ st.divider() # Uma linha fina para separar do conteúdo
 
 
 
-# --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
 
-# st.divider()
-# st.subheader("Contexto Geopolítico e Notícias")
-
-# # Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
-# tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
-
-# noticias = buscar_noticias(tema)
-
-# if noticias:
-    # for art in noticias:
-        # with st.expander(f"{art['title']}"):
-            # st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
-            # st.write(art['description'])
-            # st.link_button("Ler notícia completa", art['url'])
-# else:
-    # st.info("Nenhuma notícia encontrada para este tema no momento.")
-
-
-#----------- INÍCIO DO CODE NOVO ---------------
-################################################   
-  
-# st.divider()
-# st.header("Geopolítica & Contexto by IA")
-
-# # Filtros rápidos baseados nas suas ideias originais
-# col_filtro, col_vazia = st.columns([1, 2])
-# with col_filtro:
-    # tema_analise = st.selectbox(
-        # "Selecione o evento para correlacionar:",
-        # ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
-    # )
-
-# noticias = buscar_noticias(tema_analise)
-
-# # Exibição das Notícias em Cards
-# if noticias:
-    # for art in noticias:
-        # # Formatando a data da notícia
-        # data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
-        
-        # with st.container(border=True):
-            # st.write(f"**{art['title']}**")
-            # st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
-            # st.write(art['description'][:200] + "...") # Limitando o texto
-            # st.link_button("Ler reportagem", art['url'])
-# else:
-    # st.info(f"Sem notícias recentes para '{tema_analise}'.")
     
 
   
@@ -229,7 +181,7 @@ st.markdown(
 st.markdown('<p style="font-size: 20px; color: #1d5c3d; font-weight: bold; margin-bottom: -10px;">O que você quer analisar hoje?</p>', unsafe_allow_html=True)
 
     # 2. Cria o input sem rótulo interno (label="")
-tema_livre = st.text_input(label="", value="Brasil, Internacional, Conflitos, ...")
+tema_livre = st.text_input(label="", value="")
 
 if st.button("Analisar Impacto"):
     with st.spinner("IA minerando notícias e gerando insights..."):
@@ -269,7 +221,55 @@ if not df_hist.empty:
 else:
     st.warning("Não foi possível carregar o gráfico histórico.")
     
+# --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
 
+st.divider()
+st.subheader("Contexto Geopolítico e Notícias")
+
+# Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
+tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
+
+noticias = buscar_noticias(tema)
+
+if noticias:
+    for art in noticias:
+        with st.expander(f"{art['title']}"):
+            st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
+            st.write(art['description'])
+            st.link_button("Ler notícia completa", art['url'])
+else:
+    st.info("Nenhuma notícia encontrada para este tema no momento.")
+
+
+----------- INÍCIO DO CODE NOVO ---------------
+###############################################   
+  
+st.divider()
+st.header("Geopolítica & Contexto by IA")
+
+# Filtros rápidos baseados nas suas ideias originais
+col_filtro, col_vazia = st.columns([1, 2])
+with col_filtro:
+    tema_analise = st.selectbox(
+        "Selecione o evento para correlacionar:",
+        ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
+    )
+
+noticias = buscar_noticias(tema_analise)
+
+# Exibição das Notícias em Cards
+if noticias:
+    for art in noticias:
+        # Formatando a data da notícia
+        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+        
+        with st.container(border=True):
+            st.write(f"**{art['title']}**")
+            st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+            st.write(art['description'][:200] + "...") # Limitando o texto
+            st.link_button("Ler reportagem", art['url'])
+else:
+    st.info(f"Sem notícias recentes para '{tema_analise}'.")
     
     
 # Footnote
