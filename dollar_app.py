@@ -72,11 +72,11 @@ def buscar_noticias(termo):
     hoje = datetime.now()
     sete_dias_atras = hoje - timedelta(days=7)
     
-    # 2. Formatar para string (ISO 8601: YYYY-MM-DD)
+# Formatar para string (ISO 8601: YYYY-MM-DD)
     data_fim = hoje.strftime('%Y-%m-%d')
     data_inicio = sete_dias_atras.strftime('%Y-%m-%d')    
     
-# 3. Montar a URL com as datas dinâmicas
+# Montar a URL com as datas dinâmicas
     url = (
         f"https://newsapi.org/v2/everything?q={termo}"
         f"&from={data_inicio}"
@@ -144,29 +144,29 @@ else:
 
 # --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
 
-st.divider()
-st.subheader("Contexto Geopolítico e Notícias")
+# st.divider()
+# st.subheader("Contexto Geopolítico e Notícias")
 
-# Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
-tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
+# # Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
+# tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
 
-noticias = buscar_noticias(tema)
+# noticias = buscar_noticias(tema)
 
-if noticias:
-    for art in noticias:
-        with st.expander(f"{art['title']}"):
-            st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
-            st.write(art['description'])
-            st.link_button("Ler notícia completa", art['url'])
-else:
-    st.info("Nenhuma notícia encontrada para este tema no momento.")
+# if noticias:
+    # for art in noticias:
+        # with st.expander(f"{art['title']}"):
+            # st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
+            # st.write(art['description'])
+            # st.link_button("Ler notícia completa", art['url'])
+# else:
+    # st.info("Nenhuma notícia encontrada para este tema no momento.")
 
 
 #----------- INÍCIO DO CODE NOVO ---------------
 ################################################   
   
 st.divider()
-st.header("🌍 Inteligência Geopolítica & Contexto")
+st.header("Geopolítica & Contexto by IA")
 
 # Filtros rápidos baseados nas suas ideias originais
 col_filtro, col_vazia = st.columns([1, 2])
