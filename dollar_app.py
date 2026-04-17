@@ -220,13 +220,16 @@ def analisar_noticias_com_ia(noticias, tema, valor_dolar):
 # --- GROQ NA INTERFACE ---
 
 st.header("AI Analyst - Preço do Dólar e o Contexto Geopolítico")
-st.caption("Powered by Groq")
+st.markdown(
+    '<p style="font-size: 16px; color: #555; margin-top: -20px;">Powered by Groq</p>', 
+    unsafe_allow_html=True
+)
 
     # 1. Cria o rótulo estilizado
 st.markdown('<p style="font-size: 20px; color: #1d5c3d; font-weight: bold; margin-bottom: -10px;">O que você quer analisar hoje?</p>', unsafe_allow_html=True)
 
     # 2. Cria o input sem rótulo interno (label="")
-tema_livre = st.text_input(label="", value="Conflitos no Oriente Médio")
+tema_livre = st.text_input(label="", value="Brasil, Internacional, Conflitos, ...")
 
 if st.button("Analisar Impacto"):
     with st.spinner("IA minerando notícias e gerando insights..."):
