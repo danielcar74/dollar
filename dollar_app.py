@@ -63,11 +63,11 @@ def buscar_historico():
         
 # 3. Função para buscar dados de notícias via APINEWS
 
-def buscar_noticias(termo="geopolitica"):
+def buscar_noticias(termo):
     api_key = st.secrets["NEWS_API_KEY"]
     url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}"
     try:
-        responde = requests.get(url)
+        response = requests.get(url)
         dados = response.json()
         return dados.get("articles", [])
     except Exception as e:
@@ -139,19 +139,46 @@ st.markdown(
 )
 
 # --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
-st.divider()
-st.subheader("📰 Contexto Geopolítico e Notícias")
+# st.divider()
+# st.subheader("📰 Contexto Geopolítico e Notícias")
 
-# Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
-tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
+# # Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
+# tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
 
-noticias = buscar_noticias(tema)
+# noticias = buscar_noticias(tema)
 
+# if noticias:
+    # for art in noticias:
+        # with st.expander(f"{art['title']}"):
+            # st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
+            # st.write(art['description'])
+            # st.link_button("Ler notícia completa", art['url'])
+# else:
+    # st.info("Nenhuma notícia encontrada para este tema no momento.")
+    
+    st.divider()
+st.header("🌍 Inteligência Geopolítica & Contexto")
+
+# Filtros rápidos baseados nas suas ideias originais
+col_filtro, col_vazia = st.columns([1, 2])
+with col_filtro:
+    tema_analise = st.selectbox(
+        "Selecione o evento para correlacionar:",
+        ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
+    )
+
+noticias = buscar_noticias(tema_analise)
+
+# Exibição das Notícias em Cards
 if noticias:
     for art in noticias:
-        with st.expander(f"{art['title']}"):
-            st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
-            st.write(art['description'])
-            st.link_button("Ler notícia completa", art['url'])
+        # Formatando a data da notícia
+        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+        
+        with st.container(border=True):
+            st.write(f"**{art['title']}**")
+            st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+            st.write(art['description'][:200] + "...") # Limitando o texto
+            st.link_button("Ler reportagem", art['url'])
 else:
-    st.info("Nenhuma notícia encontrada para este tema no momento.")
+    st.info(f"Sem notícias recentes para '{tema_analise}'.")
