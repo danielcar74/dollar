@@ -1,3 +1,6 @@
+
+
+
 import streamlit as st
 import requests
 import pandas as pd
@@ -122,79 +125,155 @@ if cotacao:
 
 st.divider() # Uma linha fina para separar do conteúdo
 
-# ... (mantenha suas funções buscar_cotacao, buscar_historico e buscar_noticias no topo)
+########
 
-# --- INICIALIZAÇÃO GROQ ---
-try:
-    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-except Exception as e:
-    st.error("Erro ao configurar Groq. Verifique a chave nos Secrets.")
+##colocar GROQ
+
+
+########
+
+
+
+
+
+    
+
+  
+    
+# Inicializa o cliente Groq
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 def analisar_noticias_com_ia(noticias, tema, valor_dolar):
     if not noticias:
-        return "Nenhuma notícia encontrada para este tema nos últimos 7 dias."
+        return "Nenhuma notícia encontrada para análise."
     
+    # Preparar o texto para o LLM (mandamos apenas títulos/descrições para economizar tokens)
     texto_noticias = ""
     for i, art in enumerate(noticias):
-        texto_noticias += f"[{i}] Título: {art['title']} | Resumo: {art['description']}\n\n"
+        texto_noticias += f"[{i}] Título: {art['title']}\nDescrição: {art['description']}\n\n"
     
     prompt = f"""
-    Você é um analista sênior geopolítico e de mercado financeiro. 
-    O dólar atual está em R$ {valor_dolar}.
+    Você é um analista sênior geopolítico. Abaixo estão notícias sobre '{tema}'.
+    Selecione as 3 mais importantes que podem afetar o dólar ou a estabilidade global.
+    Para cada uma, escreva um resumo de 2 linhas e explique o porquê da importânciaa.
+    Use também o valor do dólar do dia que está em Dollar.
+    O dólar está em R$ {valor_dolar}. Com base nessas notícias, você acha que a tendência é de alta ou baixa?
+    Responda em Português, formatado em Markdown.
     
-    Analise as seguintes notícias sobre '{tema}':
+    Notícias:
     {texto_noticias}
-    
-    Com base nessas notícias e no valor atual do dólar, forneça:
-    1. Os 3 pontos de maior impacto.
-    2. Uma análise se a tendência é de alta, baixa ou estabilidade para os próximos dias.
-    3. Justificativa técnica baseada nos fatos apresentados.
-    
-    Responda em Português Brasil, de forma executiva (bullet points), formatado em Markdown.
+
     """
     
-    try:
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return completion.choices[0].message.content
-    except Exception as e:
-        return f"Erro na análise da IA: {e}"
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile", # Modelo rápido e inteligente
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    return completion.choices[0].message.content
 
-# --- INTERFACE PRINCIPAL ---
-cotacao = buscar_cotacao()
+# --- GROQ NA INTERFACE ---
 
-if cotacao:
-    # Métricas (Col1 a Col4) - Mantenha seu código original aqui
-    col1, col2, col3, col4 = st.columns(4)
-    valor_atual = cotacao['bid']
-    # ... (restante das suas colunas de métricas)
+st.header("AI Analyst - Preço do Dólar e o Contexto Geopolítico")
+st.markdown(
+    '<p style="font-size: 16px; color: #555; margin-top: -20px;">Powered by Groq</p>', 
+    unsafe_allow_html=True
+)
 
-# --- SEÇÃO DE INTELIGÊNCIA (IA) ---
-st.divider()
-st.header("🤖 Analista Geopolítico IA")
-st.markdown('<p style="font-size: 18px; color: #1d5c3d;">Pesquise um tema para ver a correlação com o Dólar</p>', unsafe_allow_html=True)
+    # 1. Cria o rótulo estilizado
+st.markdown('<p style="font-size: 20px; color: #1d5c3d; font-weight: bold; margin-bottom: -10px;">O que você quer analisar hoje?</p>', unsafe_allow_html=True)
 
-tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="Geopolítica")
+    # 2. Cria o input sem rótulo interno (label="")
+tema_livre = st.text_input(label="", value="")
 
-if st.button("Gerar Relatório de Impacto"):
-    with st.spinner("IA analisando notícias e tendências de mercado..."):
-        dados_noticias = buscar_noticias(tema_livre)
-        relatorio = analisar_noticias_com_ia(dados_noticias, tema_livre, valor_atual)
+if st.button("Analisar Impacto"):
+    with st.spinner("IA minerando notícias e gerando insights..."):
+        # Pegamos o valor atual da variável 'cotacao' que você já definiu lá em cima
+        valor_atual = cotacao['bid'] if cotacao else "Não disponível"
         
-        st.markdown("### 📊 Relatório da IA")
-        st.info(relatorio)
+        raw_noticias = buscar_noticias(tema_livre)
+        # Passamos o valor_atual para a função
+        analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
+        st.markdown(analise)
+    
+# --------------- FIM DO CODE NOVO ------------    
+###############################################    
+    
 
-# --- GRÁFICO HISTÓRICO ---
+# Exibir Gráfico Histórico
 st.divider()
-df_hist = buscar_historico()
+st.write("### Variação nos últimos 15 dias")
+
+df_hist = buscar_historico() # Aqui a função roda e devolve os dados
+
 if not df_hist.empty:
-    st.write("### Variação nos últimos 15 dias")
-    fig = px.line(df_hist, x="Data", y="Preço", markers=True, title="Tendência USD/BRL")
+    # st.write("### Histórico de Preços")
+    # st.dataframe(df_hist) # Exibe a tabela
+
+# Cria o gráfico APENAS UMA VEZ com todas as configurações
+    fig = px.line(
+            df_hist, 
+            x="Data", 
+            y="Preço", 
+            markers=True, 
+            title="Tendência USD/BRL",
+            labels={"Preço": "Valor em Reais (R$)"})
+    
+# 3. Exibe o gráfico no site 
     st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("Não foi possível carregar o gráfico histórico.")
+    
+# --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
+
+st.divider()
+st.subheader("Contexto Geopolítico e Notícias")
+
+# Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
+tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
+
+noticias = buscar_noticias(tema)
+
+if noticias:
+    for art in noticias:
+        with st.expander(f"{art['title']}"):
+            st.write(f"**Fonte:** {art['source']['name']} | **Data:** {art['publishedAt'][:10]}")
+            st.write(art['description'])
+            st.link_button("Ler notícia completa", art['url'])
+else:
+    st.info("Nenhuma notícia encontrada para este tema no momento.")
 
 
+#----------- INÍCIO DO CODE NOVO ---------------
+###############################################   
+  
+st.divider()
+st.header("Geopolítica & Contexto by IA")
+
+# Filtros rápidos baseados nas suas ideias originais
+col_filtro, col_vazia = st.columns([1, 2])
+with col_filtro:
+    tema_analise = st.selectbox(
+        "Selecione o evento para correlacionar:",
+        ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
+    )
+
+noticias = buscar_noticias(tema_analise)
+
+# Exibição das Notícias em Cards
+if noticias:
+    for art in noticias:
+        # Formatando a data da notícia
+        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+        
+        with st.container(border=True):
+            st.write(f"**{art['title']}**")
+            st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+            st.write(art['description'][:200] + "...") # Limitando o texto
+            st.link_button("Ler reportagem", art['url'])
+else:
+    st.info(f"Sem notícias recentes para '{tema_analise}'.")
+    
     
 # Footnote
 
