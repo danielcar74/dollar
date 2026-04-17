@@ -3,8 +3,8 @@ import requests
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
-#from newsapi import NewsApiClient
-#from groq import Groq
+from newsapi import NewsApiClient
+from groq import Groq
 
 
 # Configuração da página
@@ -144,8 +144,9 @@ else:
 
 
 # --- INTERFACE NOTÍCIAS (Abaixo do gráfico) ---
+
 st.divider()
-st.subheader("📰 Contexto Geopolítico e Notícias")
+st.subheader("Contexto Geopolítico e Notícias")
 
 # Um seletor para o usuário escolher o tema (Visão de PM: interatividade!)
 tema = st.selectbox("Escolha um tema para análise:", ["Irã", "Israel", "Eleições Brasil", "Fed Reserve"])
@@ -165,77 +166,80 @@ else:
 #----------- INÍCIO DO CODE NOVO ---------------
 ################################################   
   
-# st.divider()
-# st.header("🌍 Inteligência Geopolítica & Contexto")
+st.divider()
+st.header("🌍 Inteligência Geopolítica & Contexto")
 
-# # Filtros rápidos baseados nas suas ideias originais
-# col_filtro, col_vazia = st.columns([1, 2])
-# with col_filtro:
-    # tema_analise = st.selectbox(
-        # "Selecione o evento para correlacionar:",
-        # ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
-    # )
+# Filtros rápidos baseados nas suas ideias originais
+col_filtro, col_vazia = st.columns([1, 2])
+with col_filtro:
+    tema_analise = st.selectbox(
+        "Selecione o evento para correlacionar:",
+        ["Conflito Irã", "Eleições Brasil", "Déficit Fiscal", "Guerra Ucrânia"]
+    )
 
-# noticias = buscar_noticias(tema_analise)
+noticias = buscar_noticias(tema_analise)
 
-# # Exibição das Notícias em Cards
-# if noticias:
-    # for art in noticias:
-        # # Formatando a data da notícia
-        # data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+# Exibição das Notícias em Cards
+if noticias:
+    for art in noticias:
+        # Formatando a data da notícia
+        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
         
-        # with st.container(border=True):
-            # st.write(f"**{art['title']}**")
-            # st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
-            # st.write(art['description'][:200] + "...") # Limitando o texto
-            # st.link_button("Ler reportagem", art['url'])
-# else:
-    # st.info(f"Sem notícias recentes para '{tema_analise}'.")
+        with st.container(border=True):
+            st.write(f"**{art['title']}**")
+            st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
+            st.write(art['description'][:200] + "...") # Limitando o texto
+            st.link_button("Ler reportagem", art['url'])
+else:
+    st.info(f"Sem notícias recentes para '{tema_analise}'.")
     
     
-# # Inicializa o cliente Groq
-# client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+# Inicializa o cliente Groq
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-# def analisar_noticias_com_ia(noticias, tema):
-    # if not noticias:
-        # return "Nenhuma notícia encontrada para análise."
+def analisar_noticias_com_ia(noticias, tema, valor_dolar):
+    if not noticias:
+        return "Nenhuma notícia encontrada para análise."
     
-    # # Preparar o texto para o LLM (mandamos apenas títulos/descrições para economizar tokens)
-    # texto_noticias = ""
-    # for i, art in enumerate(noticias):
-        # texto_noticias += f"[{i}] Título: {art['title']}\nDescrição: {art['description']}\n\n"
+    # Preparar o texto para o LLM (mandamos apenas títulos/descrições para economizar tokens)
+    texto_noticias = ""
+    for i, art in enumerate(noticias):
+        texto_noticias += f"[{i}] Título: {art['title']}\nDescrição: {art['description']}\n\n"
     
-    # prompt = f"""
-    # Você é um analista sênior geopolítico. Abaixo estão notícias sobre '{tema}'.
-    # Selecione as 3 mais importantes que podem afetar o dólar ou a estabilidade global.
-    # Para cada uma, escreva um resumo de 2 linhas e explique o porquê da importânciaa.
-    # Use também o valor do dólar do dia que está em Dollar.
-    # O dólar está em R$ {valor}. Com base nessas notícias, você acha que a tendência é de alta ou baixa?
-    # Responda em Português, formatado em Markdown.
+    prompt = f"""
+    Você é um analista sênior geopolítico. Abaixo estão notícias sobre '{tema}'.
+    Selecione as 3 mais importantes que podem afetar o dólar ou a estabilidade global.
+    Para cada uma, escreva um resumo de 2 linhas e explique o porquê da importânciaa.
+    Use também o valor do dólar do dia que está em Dollar.
+    O dólar está em R$ {valor_dolar}. Com base nessas notícias, você acha que a tendência é de alta ou baixa?
+    Responda em Português, formatado em Markdown.
     
-    # Notícias:
-    # {texto_noticias}
-    # Dollar:
-    # {bid}
-    # """
-    
-    # completion = client.chat.completions.create(
-        # model="llama-3.3-70b-versatile", # Modelo rápido e inteligente
-        # messages=[{"role": "user", "content": prompt}]
-    # )
-    
-    # return completion.choices[0].message.content
+    Notícias:
+    {texto_noticias}
 
-# # --- NA INTERFACE ---
-# st.header("🤖 IA Analyst (Powered by Groq)")
+    """
+    
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile", # Modelo rápido e inteligente
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    return completion.choices[0].message.content
 
-# tema_livre = st.text_input("O que você quer que a IA analise hoje?", "Conflitos no Oriente Médio")
+# --- NA INTERFACE ---
+st.header("IA Analyst (Powered by Groq)")
 
-# if st.button("Analisar Impacto"):
-    # with st.spinner("IA minerando notícias e gerando insights..."):
-        # raw_noticias = buscar_noticias(tema_livre) # Sua função da NewsAPI
-        # analise = analisar_noticias_com_ia(raw_noticias, tema_livre)
-        # st.markdown(analise)
+tema_livre = st.text_input("O que você quer que a IA analise hoje?", "Conflitos no Oriente Médio")
+
+if st.button("Analisar Impacto"):
+    with st.spinner("IA minerando notícias e gerando insights..."):
+        # Pegamos o valor atual da variável 'cotacao' que você já definiu lá em cima
+        valor_atual = cotacao['bid'] if cotacao else "Não disponível"
+        
+        raw_noticias = buscar_noticias(tema_livre)
+        # Passamos o valor_atual para a função
+        analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
+        st.markdown(analise)
     
 # --------------- FIM DO CODE NOVO ------------    
 ###############################################    
@@ -245,8 +249,9 @@ else:
 # Footnote
 
 st.divider() # Uma linha fina para separar do conteúdo
-st.caption("Develop by **Daniel G. Carvalho** | Senior Product Manager")
+st.caption("Developed by **Daniel G. Carvalho** | Senior Product Manager")
 st.caption("Real time data by AwesomeAPI.")
+st.caption("Real time news by NewsAPI.")
 
 # Cria link para instagram ou LinkedIn
 
