@@ -29,6 +29,25 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown("""
+    <style>
+    /* Diminui o valor principal (ex: R$ 4.98) */
+    [data-testid="stMetricValue"] {
+        font-size: 24px !important;
+    }
+    
+    /* Diminui o rótulo (ex: Dólar Comercial) */
+    [data-testid="stMetricLabel"] {
+        font-size: 14px !important;
+    }
+
+    /* Diminui a variação percentual (ex: -0.14%) */
+    [data-testid="stMetricDelta"] {
+        font-size: 14px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Recuperar token de segurança
 try:
     token = st.secrets["AWESOME_TOKEN"]
