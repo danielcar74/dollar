@@ -1,18 +1,18 @@
-﻿**## AInalyst Dollar App**
+﻿## News Analysis Dollar App
 
-## Digital Product
+### Digital Product
 The goal of this project is to create a Python application that displays the current Dollar exchange rate and correlates it with **news events** that may have impacted the Brazilian Real's fluctuation against the US Dollar.
 
 This serves as an interesting tool to get a real-time analysis from Groq's LLM regarding the Dollar's behavior today and over the last 15 days, **contextualized by newspaper headlines** from the past seven days (via News API).
 
 The purpose is strictly educational and does not represent any investment advice, nor is it affiliated with news agencies, brokerages, or banks.
 
-## Product Management Context
+### Product Management Context
 This project was developed as technical evidence to demonstrate core Product Management, Architecture and Engineering competencies
 * **System Design:** Showcasing how frontend interfaces communicate with backend financial data flows and third-party APIs.
 * **Business Logic:** Translating interaction between news and currency into a seamless user experience.
 
-## Architecture & Core Logic
+### Architecture & Core Logic
 The application flow is designed to mimic a real-time checkout conversion engine:
 1.  **User Input:** The user inputs the target price of an item in USD.
 2.  **Data Fetching:** The app utilizes external API calls to fetch the real-time base USD to BRL exchange rate (simulating a `GET /v1/rates` endpoint).
@@ -20,13 +20,12 @@ The application flow is designed to mimic a real-time checkout conversion engine
 4.  **Fintech Engine:** Calculates the alternative cost utilizing a modern local-ledger infrastructure (lower spread, lower IOF of 1.1% for direct account transfers).
 5.  **Visualization:** Renders a side-by-side data comparison, cleanly highlighting the exact financial savings.
 
-## Tech Stack
+### Tech Stack
 * **Framework:** Streamlit (Python)
 * **Data Handling:** Pandas (for structuring rate comparisons and fee breakdowns)
 * **Integrations:** Python `requests` library for external FX API consumption
 
-## How to Run Locally
-
+### How to Run Locally
 1. Clone this repository:
    ```bash
    git clone [https://github.com/yourusername/dollar_app.git](https://github.com/yourusername/dollar_app.git)
@@ -42,7 +41,7 @@ API_KEY=your_api_key_here
 streamlit run app.py
 Open your browser and navigate to http://localhost:8501.
 
-## Architecture and Data Pipeline (CS Perspective)
+### Architecture and Data Pipeline (CS Perspective)
 The core of the application functions as a data pipeline structured in three stages:
 
 ### 1. Extraction (Data Ingestion)
@@ -57,20 +56,20 @@ The raw data is filtered and cleaned. We create an optimized string containing o
 ### 3. Processing (Inference)
 The transformed data is injected into an advanced engineering prompt and sent to Groq. The language model processes the context and generates a predictive analysis of the exchange rate trend (Upward, Downward, or Stable).
 
-## Tech Stack
+### Tech Stack
 * **Python 3.x:** Core language.
 * **Streamlit:** Framework for the web interface.
 * **Plotly Express:** Interactive data visualization.
 * **Groq (Llama 3.3):** Ultra-low latency natural language processing.
 * **AwesomeAPI & NewsAPI:** Real-time data sources.
 
-## Security and Best Practices
+### Security and Best Practices
 * **Secret Management:** Usage of `.streamlit/secrets.toml` and Cloud Environment Variables to protect API Keys.
 * **Git Hygiene:** `.gitignore` file configured to prevent the leakage of credentials and local dependencies (`venv`).
 
 ---
 
-## ⚠️ Disclaimer
+### ⚠️ Disclaimer
 
 ### About Artificial Intelligence
 This system uses the Llama 3 model via Groq. It is important to note that **Large Language Models (LLMs) can hallucinate**, meaning they may generate information that sounds factual but is inaccurate or fictitious. The AI's analysis should be interpreted as a synthesis of news and not as absolute truth.
@@ -83,19 +82,19 @@ The purpose of this project is strictly for **academic study and technical devel
 
 ---
 
-## Author
+### Author
 **Daniel G. Carvalho** Senior Product Manager
 
  -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Produto Digital
+### Produto Digital
 O objetivo do projeto é criar um código em Python que possa apresentar a cotação do dólar no momento da consulta e permitir fazer relações com notícias que possam
 ter impactado a variação do preço da moeda Real em relação ao Dólar.
 Essa se torna uma ferramenta interessante para ter uma análise em tempo real do LLM do Groq sobre o comportamento do dólar hoje e nos últimos 15 dias, diante das notícias 
 de jornais nos últimos sete dias - via API News.
 O objetivo é de estudo e não representa nenhuma sugestão de investimento, sem relação com agências, corretoras, nem bancos.
  
- Arquitetura e Pipeline de Dados (Visão de CS)
+### Arquitetura e Pipeline de Dados (Visão de CS)
 O coração da aplicação funciona como um pipeline de dados estruturado em três etapas:
 
 1. Extração (Data Ingestion)
@@ -110,14 +109,14 @@ Os dados brutos são filtrados e limpos. Criamos uma string otimizada contendo a
 3. Processamento (Inference)
 Os dados transformados são injetados em um prompt de engenharia avançada e enviados ao Groq. O modelo de linguagem processa o contexto e gera uma análise preditiva sobre a tendência do câmbio (Alta, Baixa ou Estabilidade).
 
-# Stack de Tecnologia
+### Stack de Tecnologia
 Python 3.x: Linguagem base.
 Streamlit: Framework para a interface web.
 Plotly Express: Visualização de dados interativa.
 Groq (Llama 3.3): Processamento de linguagem natural de ultra-baixa latência.
 AwesomeAPI & NewsAPI: Fontes de dados em tempo real.
 
-## Como rodar a aplicação localmente:
+### Como rodar a aplicação localmente:
 
 1. Clonar o repositório:
    ```bash
@@ -128,16 +127,16 @@ Install the required dependencies:
 pip install -r requirements.txt
 (Optional) Set up your environment variables if using a live API key:
 
-# Crie uma arquivo .env e adicione sua chave de API
+Crie uma arquivo .env e adicione sua chave de API
 API_KEY=your_api_key_here
 
-# streamlit run app.py
+streamlit run app.py
 Open your browser and navigate to http://localhost:8501.
 
 Segurança e Boas Práticas
 Secret Management: Utilização de .streamlit/secrets.toml e Variáveis de Ambiente no Cloud para proteção de API Keys.
 
-## ⚠️ Isenção de Responsabilidade (Disclaimer)
+### ⚠️ Isenção de Responsabilidade (Disclaimer)
 
 ### Sobre a Inteligência Artificial
 Este sistema utiliza o modelo Llama 3 via Groq. É importante notar que **Modelos de Linguagem de Grande Escala (LLMs) podem alucinar**, ou seja, gerar informações que parecem fatos, mas são imprecisas ou fictícias. A análise da IA deve ser interpretada como uma síntese de notícias e não como uma verdade absoluta.
@@ -149,7 +148,6 @@ O objetivo deste projeto é estritamente de **estudo acadêmico e desenvolviment
 * O autor não se responsabiliza por decisões tomadas com base nas informações geradas por esta ferramenta.
 Git Hygiene: Arquivo .gitignore configurado para evitar o vazamento de credenciais e dependências locais (venv).
 
-Autor
-Daniel G. Carvalho
-Senior Product Manager
+###Autor
+**Daniel G. Carvalho** Senior Product Manager
 
