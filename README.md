@@ -1,6 +1,6 @@
-﻿## AInalyst - Dollar App
+﻿**## AInalyst Dollar App**
 
- # Digital Product
+## Digital Product
 The goal of this project is to create a Python application that displays the current Dollar exchange rate and correlates it with **news events** that may have impacted the Brazilian Real's fluctuation against the US Dollar.
 
 This serves as an interesting tool to get a real-time analysis from Groq's LLM regarding the Dollar's behavior today and over the last 15 days, **contextualized by newspaper headlines** from the past seven days (via News API).
@@ -36,8 +36,8 @@ Install the required dependencies:
 pip install -r requirements.txt
 (Optional) Set up your environment variables if using a live API key:
 
-# Create a .env file and add your API key
-# API_KEY=your_api_key_here
+Create a .env file and add your API key
+API_KEY=your_api_key_here
 
 streamlit run app.py
 Open your browser and navigate to http://localhost:8501.
