@@ -12,36 +12,7 @@ This project was developed as technical evidence to demonstrate core Product Man
 * **System Design:** Showcasing how frontend interfaces communicate with backend financial data flows and third-party APIs.
 * **Business Logic:** Translating interaction between news and currency into a seamless user experience.
 
-### Architecture & Core Logic
-The application flow is designed to mimic a real-time checkout conversion engine:
-1.  **User Input:** The user inputs the target price of an item in USD.
-2.  **Data Fetching:** The app utilizes external API calls to fetch the real-time base USD to BRL exchange rate (simulating a `GET /v1/rates` endpoint).
-3.  **Traditional Bank Engine:** Calculates the final BRL cost by applying a standard bank spread (e.g., 4-5%) and the Brazilian IOF tax for credit cards (4.38%).
-4.  **Fintech Engine:** Calculates the alternative cost utilizing a modern local-ledger infrastructure (lower spread, lower IOF of 1.1% for direct account transfers).
-5.  **Visualization:** Renders a side-by-side data comparison, cleanly highlighting the exact financial savings.
-
-### Tech Stack
-* **Framework:** Streamlit (Python)
-* **Data Handling:** Pandas (for structuring rate comparisons and fee breakdowns)
-* **Integrations:** Python `requests` library for external FX API consumption
-
-### How to Run Locally
-1. Clone this repository:
-   ```bash
-   git clone [https://github.com/yourusername/dollar_app.git](https://github.com/yourusername/dollar_app.git)
-   cd dollar_app
-Install the required dependencies:
-
-pip install -r requirements.txt
-(Optional) Set up your environment variables if using a live API key:
-
-Create a .env file and add your API key
-API_KEY=your_api_key_here
-
-streamlit run app.py
-Open your browser and navigate to http://localhost:8501.
-
-### Architecture and Data Pipeline (CS Perspective)
+### Architecture and Data Pipeline
 The core of the application functions as a data pipeline structured in three stages:
 
 ### 1. Extraction (Data Ingestion)
@@ -66,6 +37,24 @@ The transformed data is injected into an advanced engineering prompt and sent to
 ### Security and Best Practices
 * **Secret Management:** Usage of `.streamlit/secrets.toml` and Cloud Environment Variables to protect API Keys.
 * **Git Hygiene:** `.gitignore` file configured to prevent the leakage of credentials and local dependencies (`venv`).
+
+### How to Run Locally
+1. Clone this repository:
+   ```bash
+   git clone [https://github.com/yourusername/dollar_app.git](https://github.com/yourusername/dollar_app.git)
+   cd dollar_app
+Install the required dependencies:
+
+pip install -r requirements.txt
+(Optional) Set up your environment variables if using a live API key:
+
+Create a .TOML file and add your API key (Streamlit, News API and GROQ) in a new .streamlit directory.
+AWESOME_TOKEN = "xxx"
+NEWS_API_KEY = "xxx"
+GROQ_API_KEY = "xxx"
+
+streamlit run app.py
+Open your browser and navigate to http://localhost:8501.
 
 ---
 
