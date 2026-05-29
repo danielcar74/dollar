@@ -164,7 +164,7 @@ if cotacao:
     col_titulo, col_cotacao, col_grafico = st.columns([4, 2.5, 3.5])
     
     with col_titulo:
-        st.title("Monitor de Dólar")
+        st.title("Analista AI e Monitor de Dólar")
         st.markdown(
             '<p style="font-size: 14px; color: #555; margin-top: -20px;">Integração via AwesomeAPI</p>', 
             unsafe_allow_html=True
@@ -215,7 +215,7 @@ with col_centro:
     """, unsafe_allow_html=True)
     
     # Input de texto sem label externa, usando apenas placeholder
-    tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="", key="busca_tema")
+    tema_livre = st.text_input(label="", placeholder="Ex: Trump, Iran, Israel, Taxa Selic, Eleições EUA...", value="", key="busca_tema")
     
     # Sub-grid interno para centralizar o botão de execução
     btn_col1, btn_col2, btn_col3 = st.columns([3.5, 5, 3.5])
