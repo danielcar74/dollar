@@ -16,9 +16,6 @@ st.set_page_config(page_title="Monitor de Câmbio", layout="wide")
 st.markdown(
     """
     <style>
-    .stApp {
-        background-color: #e6ffed; /* Verde claro suave */
-    }
     /* Diminui o valor principal do st.metric */
     [data-testid="stMetricValue"] {
         font-size: 24px !important;
