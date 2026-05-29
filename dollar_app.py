@@ -164,7 +164,7 @@ if cotacao:
     col_titulo, col_cotacao, col_grafico = st.columns([4, 2.5, 3.5])
     
     with col_titulo:
-        st.title("Monitor do Dólar ?")
+        st.title("Monitor do Dólar")
         st.markdown(
             '<p style="font-size: 14px; color: #555; margin-top: -20px;">Integração via AwesomeAPI</p>', 
             unsafe_allow_html=True
