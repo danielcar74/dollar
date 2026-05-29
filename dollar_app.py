@@ -6,156 +6,54 @@ import plotly.express as px
 from datetime import datetime, timedelta
 from groq import Groq
 
+# ==============================================================================
+# CONFIGURAÇÃO DA PÁGINA E ESTILOS (UI/UX)
+# ==============================================================================
 
-# Configuração da página
 st.set_page_config(page_title="Monitor de Câmbio", layout="wide")
 
-# Injeção de CSS para mudar a cor do fundo
+# Injeção de CSS para mudar a cor do fundo e ajustar tamanhos das métricas
 st.markdown(
     """
     <style>
     .stApp {
         background-color: #e6ffed; /* Verde claro suave */
     }
+    /* Diminui o valor principal do st.metric */
+    [data-testid="stMetricValue"] {
+        font-size: 24px !important;
+    }
+    /* Diminui o rótulo do st.metric */
+    [data-testid="stMetricLabel"] {
+        font-size: 14px !important;
+    }
+    /* Diminui a variação percentual do st.metric */
+    [data-testid="stMetricDelta"] {
+        font-size: 14px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-st.title("Monitor de Dólar")
-        #st.caption("Integração via AwesomeAPI")
-st.markdown(
-    '<p style="font-size: 16px; color: #555; margin-top: -20px;">Integração via AwesomeAPI</p>', 
-    unsafe_allow_html=True
-)
+# ==============================================================================
+# VALIDAÇÃO DE SEGURANÇA (SECRETS)
+# ==============================================================================
 
-st.markdown("""
-    <style>
-    /* Diminui o valor principal (ex: R$ 4.98) */
-    [data-testid="stMetricValue"] {
-        font-size: 24px !important;
-    }
-    
-    /* Diminui o rótulo (ex: Dólar Comercial) */
-    [data-testid="stMetricLabel"] {
-        font-size: 14px !important;
-    }
-
-    /* Diminui a variação percentual (ex: -0.14%) */
-    [data-testid="stMetricDelta"] {
-        font-size: 14px !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Recuperar token de segurança
 try:
     token = st.secrets["AWESOME_TOKEN"]
-except:
-    st.error("Erro: Token AWESOME_TOKEN não configurado no Secrets!")
+    api_key_news = st.secrets["NEWS_API_KEY"]
+    api_key_groq = st.secrets["GROQ_API_KEY"]
+except Exception as e:
+    st.error(f"Erro: Chaves de segurança não configuradas no Secrets! {e}")
     st.stop()
 
-# Função para buscar o preço atual do Dólar
-def buscar_cotacao():
-    url = f"https://economia.awesomeapi.com.br/json/last/USD-BRL?token={token}"
-    try:
-        response = requests.get(url)
-        dados = response.json()
-        return dados['USDBRL']
-    except Exception as e:
-        st.error(f"Erro na API: {e}")
-        return None
+# ==============================================================================
+# CLIENTE E FUNÇÕES DE INTELIGÊNCIA ARTIFICIAL (BACKEND)
+# ==============================================================================
 
-# Função para buscar o histórico da cotação do Dólar dos últimos 15 dias
-def buscar_historico():
-    url = f"https://economia.awesomeapi.com.br/json/daily/USD-BRL/15?token={token}"
-    try:
-        response = requests.get(url)
-        dados = response.json()
-        
-        # Transformar em DataFrame para facilitar o gráfico
-        lista_precos = []
-        for dia in dados:
-            lista_precos.append({
-                "Data": datetime.fromtimestamp(int(dia['timestamp'])).strftime('%d/%m/%Y'),
-                "Preço": float(dia['bid'])
-            })
-        
-        df = pd.DataFrame(lista_precos)
-        return df.iloc[::-1] # Inverter para a data mais antiga vir primeiro
-    except Exception as e:
-        st.error(f"Erro ao carregar histórico: {e}")
-        return pd.DataFrame()
-        
-# Função para buscar dados de notícias via APINEWS
-
-def buscar_noticias(termo):
-    api_key = st.secrets["NEWS_API_KEY"]
-    
-    # Calcular as datas dinamicamente
-    hoje = datetime.now()
-    sete_dias_atras = hoje - timedelta(days=7)
-    
-    # Formatar para string (ISO 8601: YYYY-MM-DD)
-    data_fim = hoje.strftime('%Y-%m-%d')
-    data_inicio = sete_dias_atras.strftime('%Y-%m-%d')    
-    
-    # Montar a URL com as datas dinâmicas
-    url = (
-        f"https://newsapi.org/v2/everything?q={termo}"
-        f"&from={data_inicio}"
-        f"&to={data_fim}"
-        f"&language=pt"
-        f"&sortBy=publishedAt"
-        f"&pageSize=20" # Pegamos mais notícias para o Groq analisar
-        f"&apiKey={api_key}"
-    )
-    
-    #url = f"https://newsapi.org/V2/everything?q={termo}&from=2026-04-15&to=2026-04-17&sortBy=publishedAt&apiKey={api_key}"
-    # url = f"https://newsapi.org/V2/everything?{termo}&language=pt&sortBy=publishedAt&pageSize=5&apiKey={api_key}"
-    
-    try:
-        response = requests.get(url)
-        dados = response.json()
-        return dados.get("articles", [])
-    except Exception as e:
-        st.error(f"Erro ao buscar notícias: {e}")
-        return []
-        
-
-# --- INTERFACE ---
-
-cotacao = buscar_cotacao()
-
-if cotacao:
-    # Exibir métricas principais
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Dólar Comercial", f"R$ {float(cotacao['bid']):.2f}", f"{cotacao['pctChange']}%")
-    with col2:
-        st.metric("Máxima do Dia", f"R$ {float(cotacao['high']):.2f}")
-    with col3:
-        st.metric("Mínima do Dia", f"R$ {float(cotacao['low']):.2f}")
-    with col4:
-    # Define o fuso horário de Brasília/São Paulo
-        fuso_sp = pytz.timezone('America/Sao_Paulo')
-    
-    # Converte o timestamp vindo da API para o fuso correto
-        data_hora_sp = datetime.fromtimestamp(int(cotacao['timestamp']), tz=pytz.utc).astimezone(fuso_sp)
-        data_hora_formatada = data_hora_sp.strftime('%d/%m/%Y %H:%M')
-    
-        st.metric("Horário (Brasília)", data_hora_formatada)
-
-
-
-
-#st.divider() # Uma linha fina para separar do conteúdo
-
-# ... (mantenha suas funções buscar_cotacao, buscar_historico e buscar_noticias no topo)
-
-# --- INICIALIZAÇÃO GROQ ---
 try:
-    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    client = Groq(api_key=api_key_groq)
 except Exception as e:
     st.error("Erro ao configurar Groq. Verifique a chave nos Secrets.")
 
@@ -168,7 +66,10 @@ def analisar_noticias_com_ia(noticias, tema, valor_dolar):
         texto_noticias += f"[{i}] Título: {art['title']} | Resumo: {art['description']}\n\n"
     
     prompt = f"""
-    Você é um analista sênior geopolítico e de mercado financeiro. 
+    Assuma o papel de um FX Trader sênior e Estrategista de Câmbio de um grande banco de investimento
+     global. Você é especialista em geopolítica, macroeconomia e fluxo cambial, 
+     sabendo exatamente como eventos geopolíticos e indicadores econômicos impactam o par USD/BRL 
+     (Dólar/Real).
     O dólar atual está em R$ {valor_dolar}.
     
     Analise as seguintes notícias sobre '{tema}':
@@ -191,130 +92,193 @@ def analisar_noticias_com_ia(noticias, tema, valor_dolar):
     except Exception as e:
         return f"Erro na análise da IA: {e}"
 
-# --- INTERFACE PRINCIPAL ---
+# ==============================================================================
+# FUNÇÕES DE CONSUMO DE API (DATA INGESTION)
+# ==============================================================================
+
+def buscar_cotacao():
+    url = f"https://economia.awesomeapi.com.br/json/last/USD-BRL?token={token}"
+    try:
+        response = requests.get(url)
+        dados = response.json()
+        return dados['USDBRL']
+    except Exception as e:
+        st.error(f"Erro na API de Cotação: {e}")
+        return None
+
+def buscar_historico():
+    url = f"https://economia.awesomeapi.com.br/json/daily/USD-BRL/15?token={token}"
+    try:
+        response = requests.get(url)
+        dados = response.json()
+        
+        lista_precos = []
+        for dia in dados:
+            lista_precos.append({
+                "Data": datetime.fromtimestamp(int(dia['timestamp'])).strftime('%d/%m/%Y'),
+                "Preço": float(dia['bid'])
+            })
+        
+        df = pd.DataFrame(lista_precos)
+        return df.iloc[::-1]  # Inverter para a data mais antiga vir primeiro
+    except Exception as e:
+        st.error(f"Erro ao carregar histórico de 15 dias: {e}")
+        return pd.DataFrame()
+        
+def buscar_noticias(termo):
+    hoje = datetime.now()
+    sete_dias_atras = hoje - timedelta(days=7)
+    
+    data_fim = hoje.strftime('%Y-%m-%d')
+    data_inicio = sete_dias_atras.strftime('%Y-%m-%d')    
+    
+    url = (
+        f"https://newsapi.org/v2/everything?q={termo}"
+        f"&from={data_inicio}"
+        f"&to={data_fim}"
+        f"&language=pt"
+        f"&sortBy=publishedAt"
+        f"&pageSize=20"
+        f"&apiKey={api_key_news}"
+    )
+    
+    try:
+        response = requests.get(url)
+        dados = response.json()
+        return dados.get("articles", [])
+    except Exception as e:
+        st.error(f"Erro ao buscar notícias: {e}")
+        return []
+
+# ==============================================================================
+# INTERFACE DO USUÁRIO (FRONTEND STREAMLIT)
+# ==============================================================================
+
+# Executa as buscas de dados essenciais para o Cabeçalho (Hero)
 cotacao = buscar_cotacao()
+df_hist = buscar_historico()
 
 if cotacao:
-    # Métricas (Col1 a Col4) - Mantenha seu código original aqui
-    col1, col2, col3, col4 = st.columns(4)
-    valor_atual = cotacao['bid']
-    # ... (restante das suas colunas de métricas)
-
-# --- SEÇÃO DE INTELIGÊNCIA (IA) ---
-#st.divider()
-
-st.markdown("""
-    <hr style="margin-top: 20px; margin-bottom: 20px; border: 0; border-top: 1px solid #ccc;">
-    <h2 style="margin-top: -10px;">Analista Geopolítico IA</h2>
-    <p style="font-size: 16px; color: #555; margin-top: -15px;">Pesquise um tema para ver a correlação com o Dólar</p>
-""", unsafe_allow_html=True)
-
-
-# st.header("Analista Geopolítico IA")
-# st.markdown(
-    # '<p style="font-size: 16px; color: #555; margin-top: -20px;">Ai powered by Groq</p>', 
-    # unsafe_allow_html=True
-# )
-# st.markdown('<p style="font-size: 18px; color: #1d5c3d;">Pesquise um tema para ver a correlação com o Dólar</p>', unsafe_allow_html=True)
-
-tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="")
-
-# if st.button("Gerar Relatório de Impacto"):
-    # with st.spinner("IA analisando notícias e tendências de mercado..."):
-        # dados_noticias = buscar_noticias(tema_livre)
-        # relatorio = analisar_noticias_com_ia(dados_noticias, tema_livre, valor_atual)
+    # --- CABEÇALHO LADO A LADO ---
+    # col_titulo (40% da tela), col_cotacao (25% da tela), col_grafico (35% da tela)
+    col_titulo, col_cotacao, col_grafico = st.columns([4, 2.5, 3.5])
+    
+    with col_titulo:
+        st.title("Monitor de Dólar")
+        st.markdown(
+            '<p style="font-size: 14px; color: #555; margin-top: -20px;">Integração via AwesomeAPI</p>', 
+            unsafe_allow_html=True
+        )
         
-        # st.markdown("### 📊 Relatório da IA")
-        # st.info(relatorio)
+    with col_cotacao:
+        fuso_sp = pytz.timezone('America/Sao_Paulo')
+        data_hora_sp = datetime.fromtimestamp(int(cotacao['timestamp']), tz=pytz.utc).astimezone(fuso_sp)
+        data_hora_formatada = data_hora_sp.strftime('%d/%m/%Y %H:%M')
         
+        # Métrica limpa e minimalista
+        st.metric("Dólar Comercial", f"R$ {float(cotacao['bid']):.2f}", f"{cotacao['pctChange']}%")
+        st.caption(f"Atualizado em: {data_hora_formatada}")
         
-##novo
-if st.button("Gerar Relatório de Impacto"):
-    with st.spinner("IA minerando notícias e gerando insights..."):
-        # 1. Busca as notícias brutas
-        raw_noticias = buscar_noticias(tema_livre)
-        
-        # 2. Pega o valor do dólar para o contexto
-        valor_atual = cotacao['bid'] if cotacao else "Não disponível"
-        
-        # 3. Gera a análise da IA
-        analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
-        # Inserção do Disclaimer aqui
-        # st.divider()
-        # st.warning("""
-        # ### ⚠️ Isenção de Responsabilidade (Disclaimer)
-        
-        # **Sobre a Inteligência Artificial:** Este sistema utiliza o modelo Llama 3 via Groq. É importante notar que Modelos de Linguagem de Grande Escala (LLMs) podem alucinar. A análise deve ser interpretada como uma síntese e não como verdade absoluta.
+    with col_grafico:
+        if not df_hist.empty:
+            # Criação do Sparkline (mini gráfico minimalista)
+            fig = px.line(df_hist, x="Data", y="Preço", markers=False)
+            fig.update_layout(
+                margin=dict(l=5, r=5, t=15, b=5),
+                height=85,
+                xaxis_title="",
+                yaxis_title="",
+                showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)'
+            )
+            # Oculta grades e eixos para um efeito limpo de dashboard financeiro
+            fig.update_xaxes(showgrid=False, visible=False)
+            fig.update_yaxes(showgrid=False, visible=False)
+            
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-        # **Sobre Investimentos:** O objetivo é de estudo acadêmico. 
-        # * Não representa sugestão de investimento.
-        # * Sem relação com agências, corretoras ou bancos.
-        # """)
-        
-        # --- EXIBIÇÃO NO FRONT-END ---
+# --- SEÇÃO DE BUSCA CENTRALIZADA ---
+st.markdown('<hr style="margin-top: 10px; margin-bottom: 25px; border: 0; border-top: 1px solid #ccc;">', unsafe_allow_html=True)
 
-        
-        # Exibe o relatório da IA primeiro (Ouro do projeto)
-        st.markdown("### Relatório de Inteligência")
-        st.info(analise)
+# Grid invisível para empurrar o conteúdo para o meio [Margem 20%, Conteúdo 60%, Margem 20%]
+col_esq, col_centro, col_dir = st.columns([2, 6, 2])
 
-        st.warning("""
+with col_centro:
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 15px;">
+            <h2 style="margin-bottom: 0px;">Analista Geopolítico IA</h2>
+            <p style="font-size: 16px; color: #555; margin-top: 5px;">
+                Pesquise um tema para ver a correlação com o Dólar
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Input de texto sem label externa, usando apenas placeholder
+    tema_livre = st.text_input(label="", placeholder="Ex: Tensão Irã x Israel, Taxa Selic, Eleições EUA...", value="", key="busca_tema")
+    
+    # Sub-grid interno para centralizar o botão de execução
+    btn_col1, btn_col2, btn_col3 = st.columns([3.5, 5, 3.5])
+    with btn_col2:
+        botao_clicado = st.button("Gerar Relatório de Impacto", use_container_width=True)
+
+# ==============================================================================
+# PROCESSAMENTO E EXIBIÇÃO DE RESULTADOS DA IA
+# ==============================================================================
+
+if botao_clicado and tema_livre:
+    with col_centro:
+        with st.spinner("IA minerando notícias e gerando insights..."):
+            # 1. Busca as notícias correspondentes
+            raw_noticias = buscar_noticias(tema_livre)
+            valor_atual = cotacao['bid'] if cotacao else "Não disponível"
+            
+            # 2. Executa a análise via Llama 3 (Groq)
+            analise = analisar_noticias_com_ia(raw_noticias, tema_livre, valor_atual)
+            
+            # --- RENDERIZAÇÃO NA TELA ---
+            st.markdown("### Relatório de Inteligência")
+            st.info(analise)
+
+            st.warning("""
                 **Atenção:** As análises acima são geradas por IA e podem conter imprecisões (alucinações). 
                 Este dashboard tem fins puramente educacionais e **não constitui recomendação de investimento**.
-                **Sobre a Inteligência Artificial:** Este sistema utiliza o modelo Llama 3 via Groq. É importante notar que Modelos de Linguagem de Grande Escala (LLMs) podem alucinar. A análise deve ser interpretada como uma síntese e não como verdade absoluta.
-            """)        
-        
-        # Exibe as notícias que serviram de base (Transparência/Fontes)
-        st.divider()
-        st.subheader("🔗 Fontes Analisadas")
-        
-        if raw_noticias:
-            # Criamos colunas para as notícias não ficarem gigantes na vertical
-            for art in raw_noticias[:6]: # Limitamos às 6 primeiras para não poluir
-                # Formata a data para o padrão BR
-                data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
                 
-                with st.container(border=True):
-                    col_logo, col_txt = st.columns([1, 4])
-                    with col_txt:
+                **Sobre a Inteligência Artificial:** Este sistema utiliza o modelo Llama 3 via Groq. A análise deve ser interpretada como uma síntese informativa e não como verdade absoluta.
+            """)        
+            
+            st.divider()
+            st.subheader("🔗 Fontes Analisadas")
+            
+            if raw_noticias:
+                # Exibe até as 6 primeiras notícias como cards estruturados
+                for art in raw_noticias[:6]:
+                    try:
+                        data_noticia = datetime.strptime(art['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%d/%m/%Y %H:%M')
+                    except:
+                        data_noticia = "Data indisponível"
+                        
+                    with st.container(border=True):
                         st.write(f"**{art['title']}**")
                         st.caption(f"📅 {data_noticia} | Fonte: {art['source']['name']}")
-                        # Link direto para a notícia
                         st.link_button("Ver notícia completa", art['url'])
-        else:
-            st.warning("Nenhuma notícia encontrada para listar como fonte.")        
-        
-        
-        
-        
+            else:
+                st.warning("Nenhuma notícia encontrada para listar como fonte.")
 
-# --- GRÁFICO HISTÓRICO ---
+# ==============================================================================
+# RODAPÉ DO PRODUTO (FOOTER)
+# ==============================================================================
+
+st.markdown("<br><br>", unsafe_allow_html=True)
 st.divider()
-df_hist = buscar_historico()
-if not df_hist.empty:
-    st.write("### Variação nos últimos 15 dias")
-    fig = px.line(df_hist, x="Data", y="Preço", markers=True, title="Tendência USD/BRL")
-    st.plotly_chart(fig, use_container_width=True)
-
-
-    
-# Footnote
-
-st.divider() # Uma linha fina para separar do conteúdo
-st.caption("Developed by **Daniel G. Carvalho** | Senior Product Manager")
-st.caption("Real time data by AwesomeAPI.")
-st.caption("Real time news by NewsAPI.")
-
-# Cria link para instagram ou LinkedIn
-
-st.markdown("---")
 st.markdown(
     """
-    <div style="text-align: center;">
-        <p>Created by <strong>Daniel G. Carvalho</strong></p>
+    <div style="text-align: center; color: #777; font-size: 14px;">
+        <p>Created by <strong>Daniel G. Carvalho</strong> | Senior Product Manager</p>
+        <p style="font-size: 12px; margin-top: -10px;">Real time data by AwesomeAPI & NewsAPI</p>
         <p>
-            <a href="https://github.com/danielcar74" target="_blank">GitHub</a> | 
-            <a href="https://www.linkedin.com/in/danielcar" target="_blank">LinkedIn</a>
+            <a href="https://github.com/danielcar74" target="_blank" style="color: #1d5c3d; text-decoration: none;">GitHub</a> | 
+            <a href="https://www.linkedin.com/in/danielcar" target="_blank" style="color: #1d5c3d; text-decoration: none;">LinkedIn</a>
         </p>
     </div>
     """, 
