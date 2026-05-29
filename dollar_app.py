@@ -164,7 +164,7 @@ if cotacao:
     col_titulo, col_cotacao, col_grafico = st.columns([4, 2.5, 3.5])
     
     with col_titulo:
-        st.title("Analista AI e Monitor de Dólar")
+        st.title("Monitor do Dólar ?")
         st.markdown(
             '<p style="font-size: 14px; color: #555; margin-top: -20px;">Integração via AwesomeAPI</p>', 
             unsafe_allow_html=True
@@ -179,22 +179,24 @@ if cotacao:
         st.metric("Dólar Comercial", f"R$ {float(cotacao['bid']):.2f}", f"{cotacao['pctChange']}%")
         st.caption(f"Atualizado em: {data_hora_formatada}")
         
-    with col_grafico:
+with col_grafico:
         if not df_hist.empty:
-            # Criação do Sparkline (mini gráfico minimalista)
-            fig = px.line(df_hist, x="Data", y="Preço", markers=False)
+            # 1. Reativamos os marcadores (bolinhas) para os pontos de preço aparecerem
+            fig = px.line(df_hist, x="Data", y="Preço", markers=True, title="Tendência 15d")
+            
+            # 2. Ajustamos o layout para dar espaço para os eixos aparecerem
             fig.update_layout(
-                margin=dict(l=5, r=5, t=15, b=5),
-                height=85,
+                margin=dict(l=40, r=10, t=30, b=30), # Aumentamos as margens (l=esquerda, b=baixo) para as letras caberem
+                height=130, # Aumentamos um pouquinho a altura de 85 para 130 para o gráfico respirar com os eixos
                 xaxis_title="",
                 yaxis_title="",
                 showlegend=False,
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)'
             )
-            # Oculta grades e eixos para um efeito limpo de dashboard financeiro
-            fig.update_xaxes(showgrid=False, visible=False)
-            fig.update_yaxes(showgrid=False, visible=False)
+            # 3. Mudamos de 'visible=False' para 'visible=True' para trazer os eixos de volta!
+            fig.update_xaxes(showgrid=True, visible=True, tickfont=dict(size=10))
+            fig.update_yaxes(showgrid=True, visible=True, tickfont=dict(size=10))
             
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
